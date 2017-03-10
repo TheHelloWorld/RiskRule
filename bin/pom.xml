@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<artifactId>RiskRule</artifactId>
+<build>
+	<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+</build>
+<dependencies>
+	<dependency>
+		<groupId>com.lefu</groupId>
+		<artifactId>CommonUtil</artifactId>
+		<version>1.0.1</version>
+	</dependency>
+	<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-core</artifactId>
+			<version>5.5.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-compiler</artifactId>
+			<version>5.5.0.Final</version>
+		</dependency>
+</dependencies>
+<groupId>com.lefu</groupId>
+<version>1.0.18</version>
+<parent>
+	<groupId>com.lefu</groupId>
+	<artifactId>base</artifactId>
+	<version>2.0</version>
+</parent>
+</project>

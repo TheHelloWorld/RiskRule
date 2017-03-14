@@ -1,0 +1,82 @@
+package com.riskrule.util;
+import java.util.*;
+import com.riskrule.bean.RuleObj;
+
+
+function boolean getSocialSecurity(RuleObj obj){
+	System.out.println("getSocialSecurity");
+	Map<String,Object> map = obj.getRuleDetail();
+	String customerScialSecurity = String.valueOf(map.get("customer_social_security"));
+	double point = 0.0;
+
+	String systemSocialSecurity = String.valueOf(map.get("system_social_security"));
+	if(customerScialSecurity != null && systemSocialSecurity != null){
+		if(customerScialSecurity.equals(systemSocialSecurity)){
+			double amt = Double.valueOf(String.valueOf(map.get("social_amt")));
+			if(amt > 5000){
+				point = 0.5;
+			}else if(amt > 4000){
+				point = 0.4;
+			}else if(amt > 3000){
+				point = 0.3;
+			}else if(amt > 2000){
+				point = 0.2;
+			}else{
+				point = 0.1;
+			}
+			System.out.println(point);
+			if(obj.getPoint() == null){
+                                obj.setPoint(point);
+                        }else if(obj.getPoint() < point){
+                                obj.setPoint(point);
+                        }
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+function boolean getPublicFund(RuleObj obj){
+	System.out.println("getPublicFund");
+	Map<String,Object> map = obj.getRuleDetail();
+	String customerPublicFund = String.valueOf(map.get("customer_public_fund"));
+	String systemPublicFund = String.valueOf(map.get("system_public_fund"));
+	double point = 0.0;
+	if(customerPublicFund != null && systemPublicFund != null){
+		if(customerPublicFund.equals(systemPublicFund)){
+			double amt = Double.valueOf(String.valueOf(map.get("fund_amt")));
+			if(amt > 3000){
+				point = 1.0;
+			}else if(amt > 2000){
+				point = 0.8;
+			}else if(amt > 1000){
+				point = 0.6;
+			}else if(amt > 500){
+				point = 0.4;
+			}else{
+				point = 0.2;
+			}
+
+			System.out.println(point);
+			if(obj.getPoint() == null){
+				obj.setPoint(point);
+			}else if(obj.getPoint() < point){
+				obj.setPoint(point);
+			}
+			return false;
+		}
+	}
+	return true;
+}
+
+
+rule "Hello World"
+
+    when
+	$c:RuleObj();
+	eval(getSocialSecurity($c) || getPublicFund($c));
+    then
+	$c.setRuleRecords("risk!");
+end

@@ -15,7 +15,9 @@ import org.mvel2.MVEL;
 import com.riskrule.util.DroolUtil;
 
 
-
+/**
+ * 规则引擎主类
+ */
 public class RunRule {
 
 	private static Map<String,RunRuleBean> ruleMap = new HashMap<>();
@@ -41,7 +43,7 @@ public class RunRule {
 	 * @param ruleName 规则名称
 	 * @param version 版本号
 	 * @param path 规则文件路径
-     */
+	 */
 	public static synchronized void initRuleEngine(String ruleName , Integer version , List<String> path){
 		System.out.println("初始化流程 ： " + ruleName);
 		System.out.println("初始化流程 version ： " + version);
@@ -49,7 +51,7 @@ public class RunRule {
 		RunRuleBean ruleBean = new RunRuleBean();
 		KnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
 		KnowledgeBuilder knowledgeBuilder = null;
-		//加载规则文
+		//加载规则文件
 		try {
 			knowledgeBuilder = DroolUtil.getKnowledgeBuilder(path);
 		} catch (Exception e) {
@@ -67,7 +69,7 @@ public class RunRule {
 	 * @param ruleName 规则名称
 	 * @param version 版本号
 	 * @param path 规则文件路径
-     */
+	 */
 	public static void refRuleEngine(String ruleName , Integer version , List<String> path){
 		System.out.println("刷新流程:" + ruleName);
 		System.out.println("刷新流程 version:" + version);
@@ -88,7 +90,7 @@ public class RunRule {
 	 * 执行规则
 	 * @param ruleName 规则名称
 	 * @param obj 执行参数
-     */
+	 */
 	public static void frieRule(String ruleName , Object obj){
 		RunRuleBean ruleBean = ruleMap.get(ruleName);
 		if(ruleBean != null ){
@@ -159,133 +161,37 @@ public class RunRule {
 
 
 	public static void main(String[] args){
-//		Integer version = 4; // 4
-//		String ruleName = "test"; // M00001_t0
-//		String rulePath = "/Users/liuzikun/risk/test_4.drl"; // H:/rule/M00001t0_4.drl
-//		List<String> list = new ArrayList<>();
-//		list.add(rulePath);
-//		initRuleEngine(ruleName, version, list);
-//
-//		Map<String,String> map  = new HashMap<>();
-//		map.put("version",String.valueOf(version));
-//		map.put("ruleName",ruleName);
-//		map.put("path","/Users/liuzikun/risk/test_4.drl");
-//		RuleObj obj = new RuleObj();
-//		System.out.println(obj.getRules());
-//		exeRuleEngine(map,obj);
-//		System.out.println(obj.getRules());
-		double amt = 100000;
-		if(amt > 5000){
-			System.out.println(1);
-		}else if(amt > 4000){
-			System.out.println(2);
-		}else if(amt > 3000){
-			System.out.println(3);
-		}else if(amt > 2000){
-			System.out.println(4);
-		}else{
-			System.out.println(5);
-		}
-		Calendar cal = Calendar.getInstance();
-		System.out.println(cal.get(Calendar.DAY_OF_YEAR));
-		System.out.println(cal.get(Calendar.DAY_OF_MONTH));
-		System.out.println(cal.get(Calendar.DAY_OF_WEEK));
-		System.out.println(cal.get(Calendar.DAY_OF_WEEK_IN_MONTH));
+		Integer version = 4; // 4
+		String ruleName = "test"; // M00001_t0
+		//String rulePath = "/Users/liuzikun/risk/test_4.drl"; // H:/rule/M00001t0_4.drl
+		//String rulePath = "src/main/resources/drlFile/test.drl";
+		String rulePath = RunRule.class.getResource("/drlFile/test.drl").getPath();
+		List<String> list = new ArrayList<>();
+		list.add(rulePath);
+		// 初始化规则引擎
+		initRuleEngine(ruleName, version, list);
 
-
+		Map<String,String> map  = new HashMap<>();
+		map.put("version",String.valueOf(version));
+		map.put("ruleName",ruleName);
+		map.put("path",rulePath);
+		RuleObj obj = new RuleObj();
+		Map ruleDetail = new HashMap<>();
+		ruleDetail.put("customer_social_security","123");
+		ruleDetail.put("system_social_security","123");
+		ruleDetail.put("social_amt",7000.0);
+		ruleDetail.put("customer_public_fund","312");
+		ruleDetail.put("system_public_fund","312");
+		ruleDetail.put("fund_amt",10000.0);
+		obj.setRuleDetail(ruleDetail);
+		System.out.println("rules before:"+obj.getRules());
+		System.out.println("point before:"+obj.getPoint());
+		// 执行规则
+		exeRuleEngine(map,obj);
+		System.out.println("rules after:"+obj.getRules());
+		System.out.println("point after:"+obj.getPoint());
 
 	}
 
-	//社保缴纳情况
-	public double getSocialSecurity(RuleObj obj){
-		Map<String,Object> map = obj.getRuleDetail();
-		String customerScialSecurity = String.valueOf(map.get("customer_social_security"));
-
-		String systemSocialSecurity = String.valueOf(map.get("system_social_security"));
-		if(customerScialSecurity != null && systemSocialSecurity != null){
-			if(customerScialSecurity.equals(systemSocialSecurity)){
-				double amt = Double.valueOf(String.valueOf(map.get("amt")));
-				if(amt > 5000){
-					return 0.5;
-				}else if(amt > 4000){
-					return 0.4;
-				}else if(amt > 3000){
-					return 0.3;
-				}else if(amt > 2000){
-					return 0.2;
-				}else{
-					return 0.1;
-				}
-			}
-		}
-		// 不符合情况
-		return 0.0;
-	}
-
-	// 公积金缴纳情况
-	public double getPublicFund(RuleObj obj){
-		Map<String,Object> map = obj.getRuleDetail();
-		String customerPublicFund = String.valueOf(map.get("customer_public_fund"));
-
-		String systemPublicFund = String.valueOf(map.get("system_public_fund"));
-		if(customerPublicFund != null && systemPublicFund != null){
-			if(customerPublicFund.equals(systemPublicFund)){
-				double amt = Double.valueOf(String.valueOf(map.get("amt")));
-				if(amt > 3000){
-					return 1.0;
-				}else if(amt > 2000){
-					return 0.8;
-				}else if(amt > 1000){
-					return 0.6;
-				}else if(amt > 500){
-					return 0.4;
-				}else{
-					return 0.2;
-				}
-			}
-		}
-		// 不符合情况
-		return 0.0;
-	}
-
-	/** 判断时间是否连续 **/
- 	public boolean getTiemConsecutiveFlag(Set<Long> set ,int size,String type) {
-		if (set.size() != size) {
-			return false;
-		}
-		List<Long> list = new ArrayList<>(size);
-		list.addAll(set);
-
-		Collections.sort(list);
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date(list.get(0)));
-		Long max_time = list.get(list.size() - 1);
-		switch (type) {
-			case "Year":
-				cal.add(Calendar.YEAR, size - 1);
-				break;
-			case "Month":
-				cal.add(Calendar.MONTH, size - 1);
-				break;
-			case "Day":
-				cal.add(Calendar.DAY_OF_YEAR, size - 1);
-				break;
-			case "Hour":
-				cal.add(Calendar.HOUR, size - 1);
-				break;
-			case "Minute":
-				cal.add(Calendar.MINUTE, size - 1);
-				break;
-			case "Second":
-				cal.add(Calendar.SECOND, size - 1);
-				break;
-		}
-		// 判断最大时间相等
-		if (cal.getTimeInMillis() == max_time) {
-			return false;
-		}
-		return true;
-
-	}
 
 }

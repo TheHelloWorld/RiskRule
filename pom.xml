@@ -50,6 +50,12 @@
 			<artifactId>knowledge-api</artifactId>
 			<version>6.4.0.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>com.lxjr.taobao</groupId>
+			<artifactId>taobao-express</artifactId>
+			<version>3.0.6</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
